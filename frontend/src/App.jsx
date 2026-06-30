@@ -3,6 +3,7 @@ import reactLogo from './assets/react.svg'
 import viteLogo from './assets/vite.svg'
 import heroImg from './assets/hero.png'
 import Login from './Login.jsx'
+import VideoShield from './VideoShield.jsx'
 import './App.css'
 
 function App() {
@@ -34,6 +35,7 @@ function App() {
       <div className="ticks"></div>
 
       <Login />
+      <VideoShield />
 
       <div className="ticks"></div>
 
