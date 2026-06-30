@@ -4,11 +4,10 @@ import viteLogo from './assets/vite.svg'
 import heroImg from './assets/hero.png'
 import Login from './Login.jsx'
 import VideoShield from './VideoShield.jsx'
+import ReviewPlayer from './ReviewPlayer.jsx'
 import './App.css'
-
 function App() {
   const [count, setCount] = useState(0)
-
   return (
     <>
       <section id="center">
@@ -31,14 +30,11 @@ function App() {
           Count is {count}
         </button>
       </section>
-
       <div className="ticks"></div>
-
       <Login />
       <VideoShield />
-
+      <ReviewPlayer />
       <div className="ticks"></div>
-
       <section id="next-steps">
         <div id="docs">
           <svg className="icon" role="presentation" aria-hidden="true">
@@ -103,11 +99,9 @@ function App() {
           </ul>
         </div>
       </section>
-
       <div className="ticks"></div>
       <section id="spacer"></section>
     </>
   )
 }
-
 export default App
