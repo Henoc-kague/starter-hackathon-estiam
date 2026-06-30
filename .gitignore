@@ -52,3 +52,4 @@ Thumbs.db
 __pycache__/
 *.pyc
 backend/public-media/*.mp4
+__azurite_db_*
