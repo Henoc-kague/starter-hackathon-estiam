@@ -1,7 +1,9 @@
-import { Controller, Get, Headers, Param, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, Req, UseGuards } from '@nestjs/common';
+import { Request } from 'express';
 import { AntiScrapingGuard } from './anti-scraping.guard';
 import { ThreatDetectorService } from './threat-detector.service';
 import { WatermarkService } from './watermark.service';
+import { AuthGuard } from '../auth/auth.guard';
 
 @Controller()
 export class AntiScrapingController {
@@ -10,10 +12,10 @@ export class AntiScrapingController {
     private readonly watermark: WatermarkService,
   ) {}
 
-  @UseGuards(AntiScrapingGuard)
+  @UseGuards(AuthGuard, AntiScrapingGuard)
   @Get('video/:id/manifest')
-  getManifest(@Param('id') id: string, @Headers('x-account-id') accountId?: string) {
-    const userId = accountId || 'utilisateur-anonyme';
+  getManifest(@Param('id') id: string, @Req() req: Request & { user?: any }) {
+    const userId = req.user?.username || 'utilisateur-anonyme';
     const wm = this.watermark.generate(userId, id);
 
     return {

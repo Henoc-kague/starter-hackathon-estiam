@@ -14,7 +14,10 @@ export class AntiScrapingGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const ip =
       request.headers['x-forwarded-for'] || request.ip || request.connection.remoteAddress;
-    const accountId = request.headers['x-account-id'];
+
+    // Priorité à l'utilisateur authentifié (posé par AuthGuard via req.user),
+    // repli sur le header de test pour les scénarios sans authentification.
+    const accountId = request.user?.username || request.headers['x-account-id'];
 
     const result = this.threatDetector.evaluate(ip, accountId);
 
