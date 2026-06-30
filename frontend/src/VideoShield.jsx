@@ -4,8 +4,8 @@ import { authFetch, getToken } from './auth'
 const API = import.meta.env.VITE_API_URL ?? 'http://localhost:3000'
 
 // Démo Pôle 2 : appelle la route vidéo protégée par AuthGuard + AntiScrapingGuard,
-// affiche le watermark forensic en overlay, et permet de simuler une attaque
-// (spam de requêtes) pour montrer le blocage en direct.
+// affiche le watermark forensic en overlay sur le lecteur, et permet de simuler
+// une attaque (spam de requêtes) pour montrer le blocage en direct.
 export default function VideoShield() {
   const [manifest, setManifest] = useState(null)
   const [error, setError] = useState(null)
@@ -43,35 +43,46 @@ export default function VideoShield() {
 
   if (!getToken()) {
     return (
-      <section style={{ maxWidth: 480, margin: '2rem auto', textAlign: 'left' }}>
+      <section style={{ maxWidth: 560, margin: '2rem auto', textAlign: 'left' }}>
         <h2>🛡️ Lecteur vidéo protégé (Pôle 2)</h2>
         <p>Connectez-vous ci-dessus pour accéder à la démo.</p>
       </section>
     )
   }
 
+  const token = getToken()
+  const streamUrl = manifest ? `${API}${manifest.manifestUrl}` : null
+
   return (
-    <section style={{ maxWidth: 480, margin: '2rem auto', textAlign: 'left' }}>
+    <section style={{ maxWidth: 560, margin: '2rem auto', textAlign: 'left' }}>
       <h2>🛡️ Lecteur vidéo protégé (Pôle 2)</h2>
       <button onClick={loadVideo}>Charger la vidéo protégée</button>
 
       {error && <p style={{ color: 'crimson' }}>Accès refusé : {error}</p>}
 
       {manifest && (
-        <div
-          style={{
-            position: 'relative',
-            background: '#111',
-            color: '#fff',
-            padding: '2rem 1rem',
-            marginTop: '1rem',
-            borderRadius: 8,
-          }}
-        >
-          <p>🎬 Vidéo : {manifest.videoId}</p>
-          <p style={{ fontSize: '0.75rem', opacity: 0.8 }}>
-            Watermark forensic : {manifest.watermark.text}
-          </p>
+        <div style={{ position: 'relative', marginTop: '1rem' }}>
+          <video
+            controls
+            width="100%"
+            style={{ borderRadius: 8, background: '#000' }}
+            src={`${streamUrl}?token=${encodeURIComponent(token)}`}
+          />
+          <div
+            style={{
+              position: 'absolute',
+              bottom: 10,
+              right: 10,
+              background: 'rgba(0,0,0,0.6)',
+              color: '#fff',
+              fontSize: '0.7rem',
+              padding: '4px 8px',
+              borderRadius: 4,
+              pointerEvents: 'none',
+            }}
+          >
+            {manifest.watermark.text}
+          </div>
         </div>
       )}
 

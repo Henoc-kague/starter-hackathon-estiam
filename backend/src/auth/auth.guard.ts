@@ -6,21 +6,21 @@ import {
 } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { Request } from 'express'
-
-// Protège une route : exige un JWT valide (header `Authorization: Bearer <token>`)
-// et expose l'utilisateur décodé sur `req.user` — réutilisable par tous les pôles.
+// Protège une route : exige un JWT valide (header `Authorization: Bearer <token>`,
+// ou en repli `?token=...` en query string pour les éléments HTML comme <video>
+// qui ne peuvent pas envoyer de headers personnalisés) et expose l'utilisateur
+// décodé sur `req.user` — réutilisable par tous les pôles.
 //   Usage :  @UseGuards(AuthGuard)  sur un contrôleur ou une route.
 @Injectable()
 export class AuthGuard implements CanActivate {
   constructor(private readonly jwt: JwtService) {}
-
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const req = context.switchToHttp().getRequest<Request>()
     const header = req.headers.authorization
-    const token = header?.startsWith('Bearer ') ? header.slice(7) : undefined
-
+    const headerToken = header?.startsWith('Bearer ') ? header.slice(7) : undefined
+    const queryToken = req.query?.token as string | undefined
+    const token = headerToken || queryToken
     if (!token) throw new UnauthorizedException('Token manquant')
-
     try {
       // payload = { sub, username, role, iat, exp }
       ;(req as Request & { user?: unknown }).user = await this.jwt.verifyAsync(token)
