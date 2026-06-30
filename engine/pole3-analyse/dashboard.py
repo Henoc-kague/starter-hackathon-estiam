@@ -24,7 +24,12 @@ st.caption("Pôle 3 — Sujet B — Hackathon 42c × ESTIAM 2026")
 logs, videos, hotspots_truth = load_data()
 
 st.sidebar.header("Sélection")
-video_id = st.sidebar.selectbox("Choisir une vidéo", videos["video_id"].tolist())
+query_video = st.query_params.get("video_id")
+video_list = videos["video_id"].tolist()
+default_index = video_list.index(query_video) if query_video in video_list else 0
+video_id = st.sidebar.selectbox("Choisir une vidéo", video_list, index=default_index)
+if query_video:
+    st.info(f"Vidéo présélectionnée depuis le lecteur : {query_video}")
 video_title = videos.loc[videos["video_id"] == video_id, "title"].iloc[0]
 video_category = videos.loc[videos["video_id"] == video_id, "category"].iloc[0]
 

@@ -3,9 +3,6 @@ import { authFetch, getToken } from './auth'
 
 const API = import.meta.env.VITE_API_URL ?? 'http://localhost:3000'
 
-// Démo Pôle 2 : appelle la route vidéo protégée par AuthGuard + AntiScrapingGuard,
-// affiche le watermark forensic en overlay sur le lecteur, et permet de simuler
-// une attaque (spam de requêtes) pour montrer le blocage en direct.
 export default function VideoShield() {
   const [manifest, setManifest] = useState(null)
   const [error, setError] = useState(null)
@@ -52,6 +49,9 @@ export default function VideoShield() {
 
   const token = getToken()
   const streamUrl = manifest ? `${API}${manifest.manifestUrl}` : null
+  const dashboardLink = manifest
+    ? 'http://localhost:8501/?video_id=' + manifest.videoId
+    : null
 
   return (
     <section style={{ maxWidth: 560, margin: '2rem auto', textAlign: 'left' }}>
@@ -86,9 +86,17 @@ export default function VideoShield() {
         </div>
       )}
 
+      {dashboardLink && (
+        <div style={{ marginTop: '1rem' }}>
+          <a href={dashboardLink} target="_blank" rel="noreferrer">
+            Voir l'analyse d'audience de cette vidéo (Pôle 3)
+          </a>
+        </div>
+      )}
+
       <div style={{ marginTop: '1.5rem' }}>
         <button onClick={simulateAttack} disabled={attacking}>
-          {attacking ? 'Simulation en cours...' : '🤖 Simuler une attaque (bot scraper)'}
+          {attacking ? 'Simulation en cours...' : 'Simuler une attaque (bot scraper)'}
         </button>
         {attackLog.length > 0 && (
           <pre
